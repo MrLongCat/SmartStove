@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".StoveOn">
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="175dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/white">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/stove_status"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:padding="25dp"
+            android:src="@drawable/stove_off"
+            android:scaleType="fitCenter"/>
+
+        <LinearLayout
+            android:id="@+id/stove_status"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:gravity="center"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stove Status :"
+                android:textColor="@color/light_blue_500"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACTIVE"
+                android:textSize="35sp"
+                android:textColor="@color/light_blue_500"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/light_blue_500"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/temp_cont"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@+id/header"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Real-Time Temperature"
+            android:textSize="20sp"
+            android:textColor="@color/light_blue_500"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"/>
+
+        <com.github.stefanodp91.android.circularseekbar.CircularSeekBar
+            android:id="@+id/temperature"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            app:cs_arcRadius="100dp"
+            app:cs_enabled="false"
+            app:cs_color_list="@array/color_list"
+            app:cs_text_size="12dp"
+            app:cs_dynamic_text_color="true"
+            app:cs_text_color="@color/light_blue_500"
+            app:cs_progress="0"
+            app:cs_text="0°C"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_below="@+id/temp_cont"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_surat"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="10dp"
+            android:layout_above="@+id/durations"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Maximum Temperature : "
+                android:textSize="18sp"
+                android:textColor="@color/light_blue_500"/>
+
+            <TextView
+                android:id="@+id/max_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="---"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/light_blue_500"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/durations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerInParent="true">
+
+            <RelativeLayout
+                android:id="@+id/setTemp"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_weight="0.5"
+                android:background="@drawable/card_biru"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:text="Start"
+                    android:gravity="center"
+                    android:textSize="15dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"/>
+
+                <TextView
+                    android:id="@+id/start_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="__:__"
+                    android:textColor="@color/white"
+                    android:textSize="25dp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/setTime"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_weight="0.5"
+                android:background="@drawable/card_biru"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:text="End"
+                    android:gravity="center"
+                    android:textSize="15dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"/>
+
+                <TextView
+                    android:id="@+id/end_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="__:__"
+                    android:textColor="@color/white"
+                    android:textSize="25dp" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

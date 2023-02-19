@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "896676010418",
+    "firebase_url": "https://smartstove-c76dd-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "smartstove-c76dd",
+    "storage_bucket": "smartstove-c76dd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896676010418:android:4915ea9a054b93e7db2cab",
+        "android_client_info": {
+          "package_name": "com.bayu.iotstove"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "896676010418-rcs8s9cqs963hkec3dom1d433ai916vg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuGuy1Wk475ZFCivmjPS7iNqvuGwUTIWM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "896676010418-rcs8s9cqs963hkec3dom1d433ai916vg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
