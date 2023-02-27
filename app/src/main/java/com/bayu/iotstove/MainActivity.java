@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+//------------------------NEW--------------------------------//
         time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,32 +84,40 @@ public class MainActivity extends AppCompatActivity {
                 timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                        time.setText(i + ":" + i1);
+                        String hourS = String.valueOf(i);
+                        if(hourS.length()==1){
+                            hourS="0"+hourS;
+                        }
+                        String minuteS = String.valueOf(i1);
+                        if (minuteS.length()==1){
+                            minuteS="0"+minuteS;
+                        }
+                        time.setText(hourS + ":" + minuteS);
                     }
                 },hour,minute,true);
-                timePickerDialog.setTitle("TEST");
+                timePickerDialog.setTitle("Set Duration");
                 timePickerDialog.show();
             }
         });
 
-
+//---------------------------NEW------------------------------//
         onOffBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Float temp = circularSeekBar.getProgress();
                 String[] durationArr = time.getText().toString().split(":");
                 Integer totalDuration = (Integer.parseInt(durationArr[0])*60)+Integer.parseInt(durationArr[1]);
-                if (temp<1){
+                if (temp<40){
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                    alertDialog.setTitle("Terjadi Kesalahan");
-                    alertDialog.setMessage("Cek koneksi kamu dan coba lagi ya...");
+                    alertDialog.setTitle("Temperature Too Low");
+                    alertDialog.setMessage("Please, Set the temperature more than 40°C");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             (dialog, which) -> dialog.dismiss());
                     alertDialog.show();
-                } else if (totalDuration==0){
+                } else if (totalDuration<1){
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                    alertDialog.setTitle("Terjadi Kesalahan");
-                    alertDialog.setMessage("Cek koneksi kamu dan coba lagi ya...");
+                    alertDialog.setTitle("Duration Too Short");
+                    alertDialog.setMessage("Please, Set the duration more than 1 Minute");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             (dialog, which) -> dialog.dismiss());
                     alertDialog.show();
@@ -118,16 +128,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         getRelay();
 
     }
 
     private void InitiateStove(Float temp, Integer totalDuration) {
-
-        Date dt = new Date();
-        SimpleDateFormat dateFormat;
-        dateFormat = new SimpleDateFormat("kk:mm");
 
 
         Stove stove = new Stove();
@@ -135,38 +140,26 @@ public class MainActivity extends AppCompatActivity {
         stove.setMaxT(Double.valueOf(temp));
         stove.setRelay(1);
         stove.setHeating(true);
-        stove.setStartTime(String.valueOf(dateFormat.format(dt)));
+//        stove.setStartTime(dateFormat.format(dt));
+        stove.setStartTime("");
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                databaseReference.setValue(stove);
-                Intent intent = new Intent(MainActivity.this, StoveOn.class);
-                startActivity(intent);
-                finish();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Terjadi Kesalahan");
-                alertDialog.setMessage("Cek koneksi kamu dan coba lagi ya...");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        (dialog, which) -> dialog.dismiss());
-                alertDialog.show();
-            }
-        });
+        databaseReference.setValue(stove);
+        Intent intent = new Intent(MainActivity.this, StoveOn.class);
+        startActivity(intent);
+        finish();
     }
 
 
+    //------------------------------NEW------------------------------//
     private void getRelay() {
-        databaseReference.child("relay").addValueEventListener(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                Integer relayVal = snapshot.getValue(Integer.class);
-                Toast.makeText(MainActivity.this, "SUCCESS", Toast.LENGTH_SHORT).show();
-                if (relayVal==1){
+                Stove stove = snapshot.getValue(Stove.class);
+                if (stove.getRelay()==1){
                     Intent intent = new Intent(MainActivity.this, StoveOn.class);
+                    intent.putExtra("maxT",stove.getMaxT());
+                    intent.putExtra("maxD",stove.getMaxD());
                     startActivity(intent);
                     finish();
                 } else {
@@ -178,8 +171,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError error) {
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Terjadi Kesalahan");
-                alertDialog.setMessage("Cek koneksi kamu dan coba lagi ya...");
+                alertDialog.setTitle("Ups...");
+                alertDialog.setMessage("Please Check your Connection and Try Again...");
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         (dialog, which) -> dialog.dismiss());
                 alertDialog.show();

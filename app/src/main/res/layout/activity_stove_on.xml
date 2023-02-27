@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="175dp"
+        android:layout_height="150dp"
         android:layout_alignParentTop="true"
         android:background="@color/white">
 
@@ -96,37 +96,36 @@
         android:id="@+id/content"
         android:layout_below="@+id/temp_cont"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/card_surat"
+            android:layout_above="@+id/durations"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
-            android:orientation="horizontal"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/card_surat"
             android:gravity="center"
-            android:padding="10dp"
-            android:layout_above="@+id/durations"
-            android:layout_marginBottom="20dp">
+            android:orientation="horizontal"
+            android:padding="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Maximum Temperature : "
-                android:textSize="18sp"
-                android:textColor="@color/light_blue_500"/>
+                android:textColor="@color/light_blue_500"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/max_temp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="---"
+                android:textColor="@color/light_blue_500"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/light_blue_500"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -141,7 +140,7 @@
             <RelativeLayout
                 android:id="@+id/setTemp"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="75dp"
                 android:layout_weight="0.5"
                 android:background="@drawable/card_biru"
                 android:layout_marginLeft="10dp"
@@ -170,14 +169,14 @@
                     android:gravity="center"
                     android:text="__:__"
                     android:textColor="@color/white"
-                    android:textSize="25dp" />
+                    android:textSize="20dp" />
 
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/setTime"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="75dp"
                 android:layout_weight="0.5"
                 android:background="@drawable/card_biru"
                 android:layout_marginLeft="5dp"
@@ -206,11 +205,24 @@
                     android:gravity="center"
                     android:text="__:__"
                     android:textColor="@color/white"
-                    android:textSize="25dp" />
+                    android:textSize="20dp" />
 
             </RelativeLayout>
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/turn_off"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/durations"
+            android:layout_margin="20dp"
+            android:background="@color/red_300"
+            android:text="Turn OFF"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
 
     </RelativeLayout>
 
