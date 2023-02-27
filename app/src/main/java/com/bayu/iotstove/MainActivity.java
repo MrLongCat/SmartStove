@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         stove.setMaxD(Double.valueOf(totalDuration));
         stove.setMaxT(Double.valueOf(temp));
         stove.setRelay(1);
+        stove.setHeating(true);
         stove.setStartTime(String.valueOf(dateFormat.format(dt)));
 
         databaseReference.addValueEventListener(new ValueEventListener() {

@@ -11,7 +11,7 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible">
+        android:visibility="invisible">
 
         <RelativeLayout
             android:id="@+id/header"
@@ -265,8 +265,7 @@
         <ProgressBar
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:indeterminateTint="#007bff"
-            android:visibility="visible" />
+            android:indeterminateTint="#007bff"/>
 
         <TextView
             android:layout_width="wrap_content"

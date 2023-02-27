@@ -6,6 +6,7 @@ public class Stove {
     private Double maxD;
     private Double maxT;
     private String startTime;
+    private boolean isHeating;
 
     public Integer getRelay() {
         return relay;
@@ -37,5 +38,13 @@ public class Stove {
 
     public void setStartTime(String startTime) {
         this.startTime = startTime;
+    }
+
+    public boolean isHeating() {
+        return isHeating;
+    }
+
+    public void setHeating(boolean heating) {
+        isHeating = heating;
     }
 }

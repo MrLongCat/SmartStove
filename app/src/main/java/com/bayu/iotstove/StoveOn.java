@@ -2,6 +2,7 @@ package com.bayu.iotstove;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -52,9 +53,13 @@ public class StoveOn extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Stove stove = snapshot.getValue(Stove.class);
+
+                Intent service = new Intent(getApplicationContext(), StoveService.class);
+                service.putExtra("maxT",stove.getMaxT());
+                startService(service);
+
                 maxTemp.setText(String.valueOf(stove.getMaxT()));
                 startTime.setText(stove.getStartTime());
-
                 try {
                     String myTime = stove.getStartTime();
                     SimpleDateFormat df = new SimpleDateFormat("HH:mm");
@@ -64,6 +69,13 @@ public class StoveOn extends AppCompatActivity {
                     cal.add(Calendar.MINUTE, (int) Math.round(stove.getMaxD()));
                     String newTime = df.format(cal.getTime());
                     endTime.setText(newTime);
+                    if (stove.getRelay().equals(0)){
+                        Intent i = new Intent(getApplicationContext(), StoveService.class);
+                        stopService(i);
+                        Intent intent = new Intent(StoveOn.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
                 } catch (Exception e){
                     e.printStackTrace();
                 }
