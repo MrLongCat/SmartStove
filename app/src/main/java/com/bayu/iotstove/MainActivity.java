@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -128,13 +129,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (StoveService.IS_ACTIVITY_RUNNING) {
+            Log.d("Stove Servoce","MASIH AKTIF CUUUK");
+        } else {
+            Log.d("Stove Servoce","Yaaayyy Udah Mati :D");
+        }
+
         getRelay();
 
     }
 
     private void InitiateStove(Float temp, Integer totalDuration) {
-
-
         Stove stove = new Stove();
         stove.setMaxD(Double.valueOf(totalDuration));
         stove.setMaxT(Double.valueOf(temp));
@@ -145,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
 
         databaseReference.setValue(stove);
         Intent intent = new Intent(MainActivity.this, StoveOn.class);
+        intent.putExtra("maxT",stove.getMaxT());
+        intent.putExtra("maxD",stove.getMaxD());
         startActivity(intent);
         finish();
     }
@@ -152,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
     //------------------------------NEW------------------------------//
     private void getRelay() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Stove stove = snapshot.getValue(Stove.class);
@@ -166,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.INVISIBLE);
                     content.setVisibility(View.VISIBLE);
                 }
+                databaseReference.removeEventListener(this);
             }
 
             @Override
@@ -179,6 +187,5 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 }

@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.stefanodp91.android.circularseekbar.CircularSeekBar;
@@ -26,12 +28,16 @@ public class StoveOn extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference outputRef;
     DatabaseReference iotRef;
+    ValueEventListener getStoveVal, getLiveTemp;
 
     CircularSeekBar circularSeekBar;
 
-    TextView maxTemp,startTime,endTime;
+    TextView maxTemp, startTime, endTime, stoveStatus;
+    ImageView imageStatus;
 
-    Button turnOff;
+    ImageView turnOff;
+
+    Intent service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +48,9 @@ public class StoveOn extends AppCompatActivity {
         maxTemp = findViewById(R.id.max_temp);
         startTime = findViewById(R.id.start_time);
         endTime = findViewById(R.id.end_time);
-        turnOff = findViewById(R.id.turn_off);
+        turnOff = findViewById(R.id.on_off_btn);
+        stoveStatus = findViewById(R.id.status);
+        imageStatus = findViewById(R.id.image_status);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         outputRef = firebaseDatabase.getReference("output");
@@ -58,7 +66,7 @@ public class StoveOn extends AppCompatActivity {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                       Stove stove = new Stove();
+                        Stove stove = new Stove();
                         stove.setHeating(false);
                         stove.setStartTime("");
                         stove.setMaxT(0.0);
@@ -66,9 +74,8 @@ public class StoveOn extends AppCompatActivity {
                         stove.setRelay(0);
                         iotRef.setValue(stove);
                         outputRef.child("realtime_temperature").setValue(0);
-                        Intent svc = new Intent(getApplicationContext(), StoveService.class);
-                        stopService(svc);
-                        StoveService.IS_ACTIVITY_RUNNING=false;
+                        stopService(service);
+                        StoveService.IS_ACTIVITY_RUNNING = false;
                         Intent intent = new Intent(StoveOn.this, MainActivity.class);
                         startActivity(intent);
                         finish();
@@ -81,17 +88,18 @@ public class StoveOn extends AppCompatActivity {
                     }
                 });
                 AlertDialog alertDialog = builder.create();
-                if (!isFinishing()){
+                if (!isFinishing()) {
                     alertDialog.show();
                 }
             }
         });
 
-        if (!StoveService.IS_ACTIVITY_RUNNING){
-            Intent service = new Intent(getApplicationContext(), StoveService.class);
-            service.putExtra("maxT",getIntent().getDoubleExtra("maxT",40));
-            service.putExtra("maxD",getIntent().getDoubleExtra("maxD",1));
+        if (!StoveService.IS_ACTIVITY_RUNNING) {
+            service = new Intent(getApplicationContext(), StoveService.class);
+            service.putExtra("maxT", getIntent().getDoubleExtra("maxT", 40));
+            service.putExtra("maxD", getIntent().getDoubleExtra("maxD", 1));
             startService(service);
+            Log.d("StoveService", "STARTED");
         }
 
         getLiveTemp();
@@ -103,63 +111,80 @@ public class StoveOn extends AppCompatActivity {
     //----------------------------NEW--------------------------//
     private void getStoveVal() {
 
-        iotRef.addValueEventListener(new ValueEventListener() {
+        getStoveVal = iotRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Stove stove = snapshot.getValue(Stove.class);
-
                 maxTemp.setText(String.valueOf(stove.getMaxT()));
+                if (stove.getRelay() == 1) {
+                    try {
+                        if (stove.isHeating()){
+                            stoveStatus.setText("HEATING");
+                            imageStatus.setImageResource(R.drawable.small_fire);
+                            imageStatus.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        } else {
+                            stoveStatus.setText("ACTIVE");
+                            imageStatus.setImageResource(R.drawable.active_fire);
+                            imageStatus.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        }
 
+                        if (stove.getStartTime().equals("") && !stove.isHeating()) {
+                            Date dt = new Date();
+                            SimpleDateFormat dateFormat;
+                            dateFormat = new SimpleDateFormat("kk:mm");
+                            stove.setStartTime(dateFormat.format(dt));
+                            iotRef.child("startTime").setValue(stove.getStartTime());
+                            startTime.setText(stove.getStartTime());
 
-                try {
-                    if (stove.getStartTime().equals("") && !stove.isHeating() && stove.getRelay()==1){
-                        Date dt = new Date();
-                        SimpleDateFormat dateFormat;
-                        dateFormat = new SimpleDateFormat("kk:mm");
-                        stove.setStartTime(dateFormat.format(dt));
-                        iotRef.child("startTime").setValue(stove.getStartTime());
-                        startTime.setText(stove.getStartTime());
-
-                        String myTime = stove.getStartTime();
-                        SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-                        Date d = df.parse(myTime);
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(d);
-                        cal.add(Calendar.MINUTE, (int) Math.round(stove.getMaxD()));
-                        String newTime = df.format(cal.getTime());
-                        endTime.setText(newTime);
-                    } else {
-                        startTime.setText(stove.getStartTime());
-
-                        String myTime = stove.getStartTime();
-                        SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-                        Date d = df.parse(myTime);
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(d);
-                        cal.add(Calendar.MINUTE, (int) Math.round(stove.getMaxD()));
-                        String newTime = df.format(cal.getTime());
-                        endTime.setText(newTime);
+                            String myTime = stove.getStartTime();
+                            SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+                            Date d = df.parse(myTime);
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(d);
+                            cal.add(Calendar.MINUTE, (int) Math.round(stove.getMaxD()));
+                            String newTime = df.format(cal.getTime());
+                            endTime.setText(newTime);
+                        } else if (!stove.getStartTime().equals("")){
+                            startTime.setText(stove.getStartTime());
+                            String myTime = stove.getStartTime();
+                            SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+                            Date d = df.parse(myTime);
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(d);
+                            cal.add(Calendar.MINUTE, (int) Math.round(stove.getMaxD()));
+                            String newTime = df.format(cal.getTime());
+                            endTime.setText(newTime);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+                } else {
+                    stove.setHeating(false);
+                    stove.setStartTime("");
+                    stove.setMaxT(0.0);
+                    stove.setMaxD(0.0);
+                    stove.setRelay(0);
+                    iotRef.setValue(stove);
+                    stopService(service);
+                    StoveService.IS_ACTIVITY_RUNNING = false;
 
-                    if (stove.getRelay().equals(0)){
-                        stove.setHeating(false);
-                        stove.setStartTime("");
-                        stove.setMaxT(0.0);
-                        stove.setMaxD(0.0);
-                        stove.setRelay(0);
-                        iotRef.setValue(stove);
-
-                        Intent i = new Intent(getApplicationContext(), StoveService.class);
-                        stopService(i);
-                        StoveService.IS_ACTIVITY_RUNNING=false;
-                        Intent intent = new Intent(StoveOn.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StoveOn.this);
+                    builder.setTitle("Time's Up!");
+                    builder.setMessage("The Cooking has been completed!");
+                    builder.setCancelable(false);
+                    builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(StoveOn.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    if (!isFinishing()) {
+                        alertDialog.show();
                     }
-                } catch (Exception e){
-                    e.printStackTrace();
                 }
-
             }
 
             @Override
@@ -172,7 +197,7 @@ public class StoveOn extends AppCompatActivity {
 
     private void getLiveTemp() {
 
-        outputRef.child("realtime_temperature").addValueEventListener(new ValueEventListener() {
+        getLiveTemp = outputRef.child("realtime_temperature").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 circularSeekBar.setProgress(snapshot.getValue(Float.class));
@@ -181,9 +206,15 @@ public class StoveOn extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError error) {
-
             }
         });
-
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        iotRef.removeEventListener(getStoveVal);
+        iotRef.removeEventListener(getLiveTemp);
+    }
+
 }
