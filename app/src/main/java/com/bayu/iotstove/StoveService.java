@@ -37,7 +37,7 @@ public class StoveService extends Service {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference outputRef;
     DatabaseReference iotRef;
-    ValueEventListener getLiveTemp, getHeatingStatus;
+    ValueEventListener getLiveTemp, getHeatingStatus, getLiveVolume;
 
     Stove stove = new Stove();
 
@@ -77,10 +77,38 @@ public class StoveService extends Service {
                         .build();
                 startForeground(1, notification);
 
+                outputRef.child("realtime_volume").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        iotRef.child("startVolume").setValue(snapshot.getValue());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+
+                    }
+                });
+
                 getLiveTemp(maxT,maxD);
+
+                getLiveVolume();
             }
         }
         return Service.START_NOT_STICKY;
+    }
+
+    private void getLiveVolume() {
+        getLiveVolume = outputRef.child("realtime_volume").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
     }
 
     //-------------------------NEW----------------------//
@@ -137,16 +165,28 @@ public class StoveService extends Service {
 
     //---------------------------NEW---------------------//
     private void stopRelay(){
+        outputRef.child("realtime_volume").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                iotRef.child("endVolume").setValue(snapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
+
         Log.d("Stove Service","STOPPED");
-        stove.setHeating(false);
-        stove.setStartTime("");
-        stove.setMaxT(0.0);
-        stove.setMaxD(0.0);
-        stove.setRelay(0);
+        iotRef.child("relay").setValue(0);
+        iotRef.child("reported").setValue(false);
         iotRef.setValue(stove);
         outputRef.child("realtime_temperature").setValue(0);
         outputRef.child("realtime_temperature").removeEventListener(getLiveTemp);
+        outputRef.child("realtime_volume").setValue(0);
+        outputRef.child("realtime_volume").removeEventListener(getLiveVolume);
         getLiveTemp=null;
+        getLiveVolume=null;
         iotRef.removeEventListener(getHeatingStatus);
         getHeatingStatus=null;
         IS_ACTIVITY_RUNNING=false;
@@ -188,13 +228,17 @@ public class StoveService extends Service {
         super.onDestroy();
         IS_ACTIVITY_RUNNING=false;
         if (getLiveTemp!=null){
-            outputRef.removeEventListener(getLiveTemp);
+            outputRef.child("realtime_temperature").removeEventListener(getLiveTemp);
         }
         if (getHeatingStatus!=null){
             iotRef.removeEventListener(getHeatingStatus);
         }
+        if (getLiveVolume!=null){
+            outputRef.child("realtime_volume").removeEventListener(getLiveVolume);
+        }
         getLiveTemp=null;
         getHeatingStatus=null;
+        getLiveVolume=null;
         stopSelf();
     }
 

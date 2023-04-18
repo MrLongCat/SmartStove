@@ -28,11 +28,11 @@ public class StoveOn extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference outputRef;
     DatabaseReference iotRef;
-    ValueEventListener getStoveVal, getLiveTemp;
+    ValueEventListener getStoveVal, getLiveTemp, getLiveVol;
 
     CircularSeekBar circularSeekBar;
 
-    TextView maxTemp, startTime, endTime, stoveStatus;
+    TextView maxTemp, startTime, endTime, stoveStatus, volume;
     ImageView imageStatus;
 
     ImageView turnOff;
@@ -51,6 +51,7 @@ public class StoveOn extends AppCompatActivity {
         turnOff = findViewById(R.id.on_off_btn);
         stoveStatus = findViewById(R.id.status);
         imageStatus = findViewById(R.id.image_status);
+        volume = findViewById(R.id.volume);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         outputRef = firebaseDatabase.getReference("output");
@@ -68,15 +69,15 @@ public class StoveOn extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Stove stove = new Stove();
                         stove.setHeating(false);
-                        stove.setStartTime("");
-                        stove.setMaxT(0.0);
-                        stove.setMaxD(0.0);
+//                        stove.setStartTime("");
+//                        stove.setMaxT(0.0);
+//                        stove.setMaxD(0.0);
                         stove.setRelay(0);
                         iotRef.setValue(stove);
                         outputRef.child("realtime_temperature").setValue(0);
                         stopService(service);
                         StoveService.IS_ACTIVITY_RUNNING = false;
-                        Intent intent = new Intent(StoveOn.this, MainActivity.class);
+                        Intent intent = new Intent(StoveOn.this, Report.class);
                         startActivity(intent);
                         finish();
                     }
@@ -104,8 +105,25 @@ public class StoveOn extends AppCompatActivity {
 
         getLiveTemp();
 
+        getLiveVolume();
+
         getStoveVal();
 
+    }
+
+    private void getLiveVolume() {
+
+        getLiveVol = outputRef.child("realtime_volume").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                volume.setText(String.valueOf(snapshot.getValue(Float.class)));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
     }
 
     //----------------------------NEW--------------------------//
@@ -115,18 +133,18 @@ public class StoveOn extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Stove stove = snapshot.getValue(Stove.class);
+                System.out.println(stove.getRelay());
                 maxTemp.setText(String.valueOf(stove.getMaxT()));
                 if (stove.getRelay() == 1) {
                     try {
                         if (stove.isHeating()){
                             stoveStatus.setText("HEATING");
                             imageStatus.setImageResource(R.drawable.small_fire);
-                            imageStatus.setScaleType(ImageView.ScaleType.FIT_CENTER);
                         } else {
                             stoveStatus.setText("ACTIVE");
                             imageStatus.setImageResource(R.drawable.active_fire);
-                            imageStatus.setScaleType(ImageView.ScaleType.FIT_CENTER);
                         }
+                        imageStatus.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
                         if (stove.getStartTime().equals("") && !stove.isHeating()) {
                             Date dt = new Date();
@@ -159,12 +177,18 @@ public class StoveOn extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    stove.setHeating(false);
-                    stove.setStartTime("");
-                    stove.setMaxT(0.0);
-                    stove.setMaxD(0.0);
-                    stove.setRelay(0);
-                    iotRef.setValue(stove);
+//                    outputRef.child("realtime_volume").addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot snapshot) {
+//                            iotRef.child("endVolume").setValue(snapshot.getValue());
+//                        }
+//                        @Override
+//                        public void onCancelled(DatabaseError error) {
+//
+//                        }
+//                    });
+//                    iotRef.child("relay").setValue(0);
+//                    iotRef.child("reported").setValue(false);
                     stopService(service);
                     StoveService.IS_ACTIVITY_RUNNING = false;
 
@@ -175,7 +199,7 @@ public class StoveOn extends AppCompatActivity {
                     builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(StoveOn.this, MainActivity.class);
+                            Intent intent = new Intent(StoveOn.this, Report.class);
                             startActivity(intent);
                             finish();
                         }
@@ -193,7 +217,6 @@ public class StoveOn extends AppCompatActivity {
             }
         });
     }
-
 
     private void getLiveTemp() {
 
@@ -215,6 +238,7 @@ public class StoveOn extends AppCompatActivity {
         super.onDestroy();
         iotRef.removeEventListener(getStoveVal);
         iotRef.removeEventListener(getLiveTemp);
+        iotRef.removeEventListener(getLiveVol);
     }
 
 }

@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="125dp"
         android:layout_alignParentTop="true"
         android:background="@color/white">
 
@@ -70,7 +70,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_below="@+id/header"
-        android:weightSum="2"
+        android:weightSum="6"
         android:gravity="center"
         android:layout_alignParentBottom="true">
 
@@ -80,7 +80,7 @@
             android:layout_height="0dp"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_weight="1">
+            android:layout_weight="2">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -98,9 +98,9 @@
 
                 <com.github.stefanodp91.android.circularseekbar.CircularSeekBar
                     android:id="@+id/temperature"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    app:cs_arcRadius="100dp"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    app:cs_arcRadius="50dp"
                     app:cs_enabled="false"
                     app:cs_color_list="@array/color_list"
                     app:cs_text_size="12dp"
@@ -117,6 +117,48 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_margin="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_surat"
+                android:gravity="center"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Live Volume : "
+                    android:textColor="@color/light_blue_500"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/volume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="---"
+                    android:textColor="@color/light_blue_500"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" litre"
+                    android:textColor="@color/light_blue_500"
+                    android:textSize="20sp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -243,12 +285,11 @@
                 android:id="@+id/off_area"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:gravity="center">
 
                 <LinearLayout
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
                     android:layout_alignParentBottom="true"
                     android:background="@drawable/circle_off_button">
 

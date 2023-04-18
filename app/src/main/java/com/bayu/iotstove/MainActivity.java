@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         stove.setMaxT(Double.valueOf(temp));
         stove.setRelay(1);
         stove.setHeating(true);
+        stove.setReported(true);
 //        stove.setStartTime(dateFormat.format(dt));
         stove.setStartTime("");
 
@@ -163,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Stove stove = snapshot.getValue(Stove.class);
+                if (!stove.isReported()){
+                    Intent intent = new Intent(MainActivity.this, Report.class);
+                    startActivity(intent);
+                    finish();
+                }
                 if (stove.getRelay()==1){
                     Intent intent = new Intent(MainActivity.this, StoveOn.class);
                     intent.putExtra("maxT",stove.getMaxT());
