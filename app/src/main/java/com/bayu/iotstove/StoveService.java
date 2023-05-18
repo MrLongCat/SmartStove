@@ -130,7 +130,7 @@ public class StoveService extends Service {
                         }
                         @Override
                         public void onFinish() {
-                            notifFinish();
+                            notifyFinish();
                             stopRelay();
                         }
                     }.start();
@@ -143,7 +143,7 @@ public class StoveService extends Service {
         });
     }
 
-    private void notifFinish() {
+    private void notifyFinish() {
         if(Build.VERSION.SDK_INT >=Build.VERSION_CODES.O){
             NotificationChannel channel= new NotificationChannel("My Notification","My Notification",NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager =getSystemService(NotificationManager.class);
@@ -181,9 +181,9 @@ public class StoveService extends Service {
         iotRef.child("relay").setValue(0);
         iotRef.child("reported").setValue(false);
         iotRef.setValue(stove);
-        outputRef.child("realtime_temperature").setValue(0);
+//        outputRef.child("realtime_temperature").setValue(0);
         outputRef.child("realtime_temperature").removeEventListener(getLiveTemp);
-        outputRef.child("realtime_volume").setValue(0);
+//        outputRef.child("realtime_volume").setValue(0);
         outputRef.child("realtime_volume").removeEventListener(getLiveVolume);
         getLiveTemp=null;
         getLiveVolume=null;

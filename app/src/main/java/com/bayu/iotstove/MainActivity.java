@@ -129,14 +129,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (StoveService.IS_ACTIVITY_RUNNING) {
-            Log.d("Stove Servoce","MASIH AKTIF CUUUK");
-        } else {
-            Log.d("Stove Servoce","Yaaayyy Udah Mati :D");
-        }
-
         getRelay();
-
     }
 
     private void InitiateStove(Float temp, Integer totalDuration) {
@@ -164,11 +157,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Stove stove = snapshot.getValue(Stove.class);
-                if (!stove.isReported()){
-                    Intent intent = new Intent(MainActivity.this, Report.class);
-                    startActivity(intent);
-                    finish();
-                }
                 if (stove.getRelay()==1){
                     Intent intent = new Intent(MainActivity.this, StoveOn.class);
                     intent.putExtra("maxT",stove.getMaxT());
@@ -180,6 +168,11 @@ public class MainActivity extends AppCompatActivity {
                     content.setVisibility(View.VISIBLE);
                 }
                 databaseReference.removeEventListener(this);
+                if (!stove.isReported()){
+                    Intent intent = new Intent(MainActivity.this, Report.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
 
             @Override

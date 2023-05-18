@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,6 +28,8 @@ public class Report extends AppCompatActivity {
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+
+    DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +69,7 @@ public class Report extends AppCompatActivity {
                 finalVolume.setText(String.valueOf(stove.getEndVolume()));
                 maxTemp.setText(String.valueOf(stove.getMaxT()));
                 double volDiff = 100-((stove.getEndVolume()/stove.getStartVolume())*100);
-                volChange.setText(String.valueOf(volDiff));
+                volChange.setText(decimalFormat.format(volDiff));
             }
 
             @Override

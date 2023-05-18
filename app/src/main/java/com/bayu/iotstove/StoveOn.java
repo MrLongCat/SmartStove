@@ -69,10 +69,8 @@ public class StoveOn extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Stove stove = new Stove();
                         stove.setHeating(false);
-//                        stove.setStartTime("");
-//                        stove.setMaxT(0.0);
-//                        stove.setMaxD(0.0);
                         stove.setRelay(0);
+                        stove.setReported(false);
                         iotRef.setValue(stove);
                         outputRef.child("realtime_temperature").setValue(0);
                         stopService(service);
@@ -177,18 +175,18 @@ public class StoveOn extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else {
-//                    outputRef.child("realtime_volume").addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(DataSnapshot snapshot) {
-//                            iotRef.child("endVolume").setValue(snapshot.getValue());
-//                        }
-//                        @Override
-//                        public void onCancelled(DatabaseError error) {
-//
-//                        }
-//                    });
-//                    iotRef.child("relay").setValue(0);
-//                    iotRef.child("reported").setValue(false);
+                    outputRef.child("realtime_volume").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            iotRef.child("endVolume").setValue(snapshot.getValue());
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+
+                        }
+                    });
+                    iotRef.child("relay").setValue(0);
+                    iotRef.child("reported").setValue(false);
                     stopService(service);
                     StoveService.IS_ACTIVITY_RUNNING = false;
 
@@ -196,13 +194,10 @@ public class StoveOn extends AppCompatActivity {
                     builder.setTitle("Time's Up!");
                     builder.setMessage("The Cooking has been completed!");
                     builder.setCancelable(false);
-                    builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(StoveOn.this, Report.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                    builder.setNeutralButton("OK", (dialogInterface, i) -> {
+                        Intent intent = new Intent(StoveOn.this, Report.class);
+                        startActivity(intent);
+                        finish();
                     });
                     AlertDialog alertDialog = builder.create();
                     if (!isFinishing()) {
